@@ -28,6 +28,10 @@
   --hero-b: rgba(59, 130, 246, 0.18);
   --hero-c: rgba(34, 197, 94, 0.12);
   --hero-d: rgba(255, 255, 255, 0.55);
+  --cta-start: #0f172a;
+  --cta-end: #1d4ed8;
+  --cta-text: #f8fbff;
+  --cta-ring: rgba(29, 78, 216, 0.35);
 }
 
 :root[data-theme="dark"] {
@@ -52,6 +56,10 @@
   --hero-b: rgba(59, 130, 246, 0.14);
   --hero-c: rgba(34, 197, 94, 0.08);
   --hero-d: rgba(255, 255, 255, 0.04);
+  --cta-start: #0f172a;
+  --cta-end: #1d4ed8;
+  --cta-text: #f8fbff;
+  --cta-ring: rgba(56, 189, 248, 0.28);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -162,7 +170,7 @@ pre code {
 }
 
 .page-wrap {
-  width: min(1120px, calc(100% - 2rem));
+  width: min(1520px, calc(100% - 1.5rem));
   margin-inline: auto;
 }
 
@@ -192,6 +200,31 @@ pre code {
 .feature-card:hover {
   transform: translateY(-3px);
   border-color: color-mix(in oklab, var(--lagoon-deep) 28%, var(--line));
+}
+
+.cta-button {
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid color-mix(in oklab, var(--cta-end) 48%, var(--cta-start));
+  background: linear-gradient(135deg, var(--cta-start), var(--cta-end));
+  color: var(--cta-text);
+  box-shadow:
+    0 18px 38px rgba(15, 23, 42, 0.22),
+    0 0 0 1px rgba(255, 255, 255, 0.08) inset;
+  text-decoration: none;
+}
+
+.cta-button:hover {
+  color: var(--cta-text);
+  transform: translateY(-2px);
+  box-shadow:
+    0 22px 42px rgba(15, 23, 42, 0.26),
+    0 0 0 1px rgba(255, 255, 255, 0.12) inset;
+}
+
+.cta-button:focus-visible {
+  outline: 3px solid var(--cta-ring);
+  outline-offset: 3px;
 }
 
 button,

@@ -5,7 +5,7 @@ import ThemeToggle from './ThemeToggle'
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[var(--header-bg)] px-4 backdrop-blur-lg">
-      <nav className="page-wrap flex flex-wrap items-center gap-3 py-4">
+      <nav className="page-wrap flex w-full flex-wrap items-center gap-4 py-5">
         <h2 className="m-0 flex-shrink-0 text-base font-semibold tracking-tight">
           <Link
             to="/"
@@ -16,52 +16,12 @@ export default function Header() {
           </Link>
         </h2>
 
-        <div className="order-3 flex w-full flex-wrap items-center gap-x-5 gap-y-2 text-sm font-medium sm:order-2 sm:ml-8 sm:w-auto">
-          <Link
-            to="/"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            Home
-          </Link>
-          <Link
-            to="/about"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            About
-          </Link>
-          <Link
-            to="/team"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            Team
-          </Link>
-          <Link
-            to="/services"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            Services
-          </Link>
-          <Link
-            to="/products"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            Products
-          </Link>
-          <Link
-            to="/courses"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            Courses
-          </Link>
-        </div>
+        <span className="soft-pill inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--sea-ink-soft)]">
+          <span className="h-1.5 w-1.5 rounded-full bg-[var(--lagoon)]" />
+          Alpha
+        </span>
 
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-3">
           <ThemeToggle />
 
           <div

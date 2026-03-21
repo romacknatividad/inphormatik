@@ -9,9 +9,8 @@ This project is the website for **InPHormatik**, a digital company focused on:
 - Data analysis
 - AI-enabled solutions
 - Digital products
-- On-demand learning
 
-The website is designed to present the company in a modern, professional, and visual way. It acts as both a brand presence and a platform for showcasing services, software products, courses, and organizational structure.
+The website is designed to present the company in a modern, professional, and visual way. It acts as both a brand presence and a platform for showcasing services, software products, and organizational structure.
 
 ## Purpose of the Website
 
@@ -20,7 +19,6 @@ The website exists to:
 - introduce InPHormatik as a technology-focused company
 - present its services in a structured way
 - showcase software products that can be offered to organizations and institutions
-- provide space for future course selling and digital learning
 - show the company team and organizational structure
 - support future growth into a fuller business website or software showcase platform
 
@@ -38,8 +36,6 @@ The application currently includes these main routes:
   Service offerings covering systems architecture, systems design, web design and development, maintenance, QA, data analysis, systems integration, AI integration, and machine learning model engineering
 - `/products`
   Software product showcase featuring booking and scheduling software, payroll and HRM system, school attendance monitoring system, student records management system, university ERP, and barangay management system
-- `/courses`
-  Page for the company's future on-demand learning and course offerings
 
 ## Recent Updates
 
@@ -51,7 +47,6 @@ Recent work on the site includes:
 - removed the old portfolio page to keep the structure cleaner
 - improved the products page so it reflects actual software offerings instead of placeholders
 - improved the services page with clearer grouping and better presentation
-- improved the courses page with stronger structure and richer visual layout
 - clarified the difference between the About page and Team page
 - upgraded the Team page into a more realistic organization view with leadership and departments
 - added stock imagery and symbolic visual sections across multiple pages
@@ -78,7 +73,7 @@ Important files and folders:
 - `src/components/`
   Shared layout components such as the header and footer
 - `src/content/site.ts`
-  Shared website content for services, products, courses, and team structure
+  Shared website content for services, products, and team structure
 - `src/styles.css`
   Global styles, theme tokens, and shared visual treatments
 

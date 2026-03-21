@@ -85,29 +85,6 @@ export const products = [
   },
 ]
 
-export const courses = [
-  {
-    title: 'On-Demand Learning',
-    description:
-      'Self-paced courses that let learners move through material on their own schedule without sacrificing clarity.',
-  },
-  {
-    title: 'Practical Technical Topics',
-    description:
-      'Course content focused on usable digital, software, systems, and data skills with real-world relevance.',
-  },
-  {
-    title: 'Integrated Course Selling',
-    description:
-      'A website experience that can support course discovery, purchase, and learning access within the same ecosystem.',
-  },
-  {
-    title: 'Learning Paths for Teams',
-    description:
-      'Structured training journeys that can support individuals, groups, and organizations building digital capability.',
-  },
-]
-
 export const executiveTeam = [
   {
     name: 'Adrian Cruz',
