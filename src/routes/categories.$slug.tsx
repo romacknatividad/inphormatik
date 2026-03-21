@@ -1,4 +1,4 @@
-import { Link, createFileRoute, redirect } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { auth } from '@clerk/tanstack-react-start/server'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import { getCategoryBySlug } from '../content/categories'
@@ -8,41 +8,37 @@ import { loadEconomyDashboardData } from '../components/economy/economyData'
 import { ResearchPublicationsSection } from '../components/ResearchPublications'
 
 export const Route = createFileRoute('/categories/$slug')({
-  beforeLoad: async ({ location }) => {
+  loader: async ({ params, location }) => {
     const { isAuthenticated } = await auth()
 
     if (!isAuthenticated) {
-      const searchParams = new URLSearchParams()
-
-      for (const [key, value] of Object.entries(location.search as Record<string, unknown>)) {
-        if (typeof value === 'string') {
-          searchParams.set(key, value)
-        }
+      return {
+        authenticated: false,
+        redirectUrl: location.pathname,
+        dashboard: null,
       }
-
-      const redirectUrl = `${location.pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`
-
-      throw redirect({
-        to: '/sign-in',
-        search: {
-          redirectUrl,
-        },
-      })
     }
-  },
-  loader: async ({ params }) => {
+
     if (params.slug !== 'economy-development') {
-      return null
+      return {
+        authenticated: true,
+        redirectUrl: location.pathname,
+        dashboard: null,
+      }
     }
 
-    return loadEconomyDashboardData()
+    return {
+      authenticated: true,
+      redirectUrl: location.pathname,
+      dashboard: await loadEconomyDashboardData(),
+    }
   },
   component: CategoryPage,
 })
 
 function CategoryPage() {
   const { slug } = Route.useParams()
-  const economyDashboard = Route.useLoaderData()
+  const { authenticated, redirectUrl, dashboard: economyDashboard } = Route.useLoaderData()
   const category = getCategoryBySlug(slug)
   const researchPublications = category ? getResearchPublications(category.slug) : []
 
@@ -58,6 +54,39 @@ function CategoryPage() {
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Back to homepage
           </Link>
+        </section>
+      </main>
+    )
+  }
+
+  if (!authenticated) {
+    return (
+      <main className="page-wrap px-4 pb-20 pt-14 sm:pt-20">
+        <section className="mx-auto flex w-full max-w-3xl flex-col gap-6 rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] p-8">
+          <div className="space-y-3">
+            <p className="island-kicker">Protected category</p>
+            <h1 className="display-title text-4xl font-bold tracking-[-0.04em] text-[var(--sea-ink)]">
+              Sign in to view this category.
+            </h1>
+            <p className="max-w-2xl text-sm leading-7 text-[var(--sea-ink-soft)]">
+              This section is available to authenticated users only. Please sign in to continue to
+              {category.title.toLowerCase()} and return here after authentication.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <Link
+              to="/sign-in"
+              search={{ redirectUrl }}
+              className="soft-pill inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[var(--sea-ink)] no-underline"
+            >
+              Sign in to continue
+            </Link>
+            <Link to="/" className="soft-pill inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[var(--sea-ink)] no-underline">
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+              Back to homepage
+            </Link>
+          </div>
         </section>
       </main>
     )
