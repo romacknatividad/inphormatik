@@ -1,14 +1,50 @@
-import { Link, createFileRoute } from '@tanstack/react-router'
+import { Link, createFileRoute, redirect } from '@tanstack/react-router'
+import { auth } from '@clerk/tanstack-react-start/server'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import { getCategoryBySlug } from '../content/categories'
+import { getResearchPublications } from '../content/researchPublications'
+import { EconomyCategoryPage } from '../components/economy/EconomyCategoryPage'
+import { loadEconomyDashboardData } from '../components/economy/economyData'
+import { ResearchPublicationsSection } from '../components/ResearchPublications'
 
 export const Route = createFileRoute('/categories/$slug')({
+  beforeLoad: async ({ location }) => {
+    const { isAuthenticated } = await auth()
+
+    if (!isAuthenticated) {
+      const searchParams = new URLSearchParams()
+
+      for (const [key, value] of Object.entries(location.search as Record<string, unknown>)) {
+        if (typeof value === 'string') {
+          searchParams.set(key, value)
+        }
+      }
+
+      const redirectUrl = `${location.pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`
+
+      throw redirect({
+        to: '/sign-in',
+        search: {
+          redirectUrl,
+        },
+      })
+    }
+  },
+  loader: async ({ params }) => {
+    if (params.slug !== 'economy-development') {
+      return null
+    }
+
+    return loadEconomyDashboardData()
+  },
   component: CategoryPage,
 })
 
 function CategoryPage() {
   const { slug } = Route.useParams()
+  const economyDashboard = Route.useLoaderData()
   const category = getCategoryBySlug(slug)
+  const researchPublications = category ? getResearchPublications(category.slug) : []
 
   if (!category) {
     return (
@@ -27,174 +63,163 @@ function CategoryPage() {
     )
   }
 
+  if (category.slug === 'economy-development') {
+    return <EconomyCategoryPage category={category} dashboard={economyDashboard} />
+  }
+
   return (
     <main className="page-wrap px-4 pb-20 pt-14 sm:pt-20">
-      <div className="grid gap-6 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
-        <aside className="space-y-6 lg:sticky lg:top-28">
-          <section className="island-shell rounded-[2rem] border border-[var(--line)] p-6">
-            <p className="island-kicker mb-3">
-              {category.emoji} {category.title}
-            </p>
-            <h1 className="display-title mb-4 text-4xl font-bold tracking-[-0.04em] text-[var(--sea-ink)]">
-              {category.description}
-            </h1>
-            <p className="text-sm leading-7 text-[var(--sea-ink-soft)]">
-              {category.overview}
-            </p>
-          </section>
+      <div className="space-y-6">
+        <section className="island-shell rounded-[2rem] border border-[var(--line)] p-6">
+          <p className="island-kicker mb-3">
+            {category.emoji} {category.title}
+          </p>
+          <h1 className="display-title mb-4 text-4xl font-bold tracking-[-0.04em] text-[var(--sea-ink)]">
+            {category.description}
+          </h1>
+          <p className="text-sm leading-7 text-[var(--sea-ink-soft)]">{category.overview}</p>
+        </section>
 
-          <section className="rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-6">
-            <p className="island-kicker mb-3">Category Details</p>
-            <div className="grid gap-3">
-              <InfoRow label="Examples" value={`${category.examples.length} datasets`} />
-              <InfoRow label="Study areas" value={`${category.studyAreas.length} topics`} />
-              <InfoRow label="Outputs" value={`${category.outputs.length} use cases`} />
+        <section className="rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-6">
+          <p className="island-kicker mb-3">Category Details</p>
+          <div className="grid gap-3">
+            <InfoRow label="Examples" value={`${category.examples.length} datasets`} />
+            <InfoRow label="Study areas" value={`${category.studyAreas.length} topics`} />
+            <InfoRow label="Outputs" value={`${category.outputs.length} use cases`} />
+          </div>
+        </section>
+
+        <section className="island-shell rise-in rounded-[2rem] border border-[var(--line)] p-6 sm:p-8">
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="island-kicker mb-2">Main Content</p>
+              <h2 className="text-2xl font-semibold tracking-tight text-[var(--sea-ink)]">
+                Data, source links, charts, and visual analysis
+              </h2>
             </div>
-          </section>
+            <span className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-1 text-xs text-[var(--sea-ink-soft)]">
+              Built for educational exploration
+            </span>
+          </div>
 
+          <div className="grid gap-4">
+            {category.examples.map((item, index) => (
+              <article
+                key={item}
+                className="rounded-[1.5rem] border border-[var(--line)] bg-white/60 p-5"
+              >
+                <p className="island-kicker mb-2">Data Set {index + 1}</p>
+                <h3 className="mb-2 text-lg font-semibold tracking-tight text-[var(--sea-ink)]">
+                  {item}
+                </h3>
+                <p className="m-0 text-sm leading-7 text-[var(--sea-ink-soft)]">
+                  A clean starting point for building charts, summaries, and category-specific
+                  analysis views.
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        {category.resources?.length ? (
           <section className="rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-6">
-            <p className="island-kicker mb-3">What To Look For</p>
-            <ul className="m-0 space-y-3 pl-5 text-sm leading-7 text-[var(--sea-ink-soft)]">
-              {category.studyAreas.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </section>
-
-          <section className="rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-6">
-            <p className="island-kicker mb-3">Back</p>
-            <Link to="/" className="soft-pill inline-flex items-center gap-2 px-4 py-2">
-              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-              Back to categories
-            </Link>
-          </section>
-        </aside>
-
-        <section className="space-y-6">
-          <section className="island-shell rise-in rounded-[2rem] border border-[var(--line)] p-6 sm:p-8">
-            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <p className="island-kicker mb-2">Main Content</p>
-                <h2 className="text-2xl font-semibold tracking-tight text-[var(--sea-ink)]">
-                  Data, source links, charts, and visual analysis
-                </h2>
-              </div>
-              <span className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-1 text-xs text-[var(--sea-ink-soft)]">
-                Built for educational exploration
-              </span>
+            <div className="mb-4">
+              <p className="island-kicker mb-2">Official Sources</p>
+              <h2 className="text-2xl font-semibold tracking-tight text-[var(--sea-ink)]">
+                Live links for primary reference
+              </h2>
             </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              {category.examples.map((item, index) => (
+            <div className="grid gap-4">
+              {category.resources.map((resource) => (
                 <article
-                  key={item}
-                  className="rounded-[1.5rem] border border-[var(--line)] bg-white/60 p-5"
+                  key={resource.title}
+                  className="feature-card rounded-[1.5rem] border border-[var(--line)] p-5"
                 >
-                  <p className="island-kicker mb-2">Data Set {index + 1}</p>
-                  <h3 className="mb-2 text-lg font-semibold tracking-tight text-[var(--sea-ink)]">
-                    {item}
-                  </h3>
-                  <p className="m-0 text-sm leading-7 text-[var(--sea-ink-soft)]">
-                    A clean starting point for building charts, summaries, and category-specific
-                    analysis views.
-                  </p>
+                  <div className="mb-4 flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="mb-2 text-lg font-semibold tracking-tight text-[var(--sea-ink)]">
+                        {resource.title}
+                      </h3>
+                      <p className="m-0 text-sm leading-7 text-[var(--sea-ink-soft)]">
+                        {resource.description}
+                      </p>
+                    </div>
+                    <span className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-1 text-[11px] font-medium text-[var(--sea-ink-soft)]">
+                      {resource.source}
+                    </span>
+                  </div>
+
+                  <a
+                    href={resource.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="soft-pill inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[var(--sea-ink)] no-underline"
+                  >
+                    Open source
+                    <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+                  </a>
                 </article>
               ))}
             </div>
           </section>
+        ) : null}
 
-          {category.resources?.length ? (
-            <section className="rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-6">
-              <div className="mb-4">
-                <p className="island-kicker mb-2">Official Sources</p>
-                <h2 className="text-2xl font-semibold tracking-tight text-[var(--sea-ink)]">
-                  Live links for primary reference
-                </h2>
-              </div>
-
-              <div className="grid gap-4 xl:grid-cols-2">
-                {category.resources.map((resource) => (
-                  <article
-                    key={resource.title}
-                    className="feature-card rounded-[1.5rem] border border-[var(--line)] p-5"
-                  >
-                    <div className="mb-4 flex items-start justify-between gap-4">
-                      <div>
-                        <h3 className="mb-2 text-lg font-semibold tracking-tight text-[var(--sea-ink)]">
-                          {resource.title}
-                        </h3>
-                        <p className="m-0 text-sm leading-7 text-[var(--sea-ink-soft)]">
-                          {resource.description}
-                        </p>
-                      </div>
-                      <span className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-1 text-[11px] font-medium text-[var(--sea-ink-soft)]">
-                        {resource.source}
-                      </span>
-                    </div>
-
-                    <a
-                      href={resource.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="soft-pill inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[var(--sea-ink)] no-underline"
-                    >
-                      Open source
-                      <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                    </a>
-                  </article>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
-          <section className="grid gap-4 xl:grid-cols-3">
-            <VisualizationCard
-              title="Trend View"
-              description="A time-based chart for growth, change, or movement across years and cycles."
-              kind="bars"
-            />
-            <VisualizationCard
-              title="Comparison View"
-              description="A clean panel for comparing regions, groups, or sectors side by side."
-              kind="columns"
-            />
-            <VisualizationCard
-              title="Scientific Graph"
-              description="A relationship view for correlations, clustering, and more technical analysis."
-              kind="scatter"
-            />
-          </section>
-
-          <section className="grid gap-4 xl:grid-cols-[1fr_0.95fr]">
-            <article className="rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-6">
-              <p className="island-kicker mb-3">Useful Outputs</p>
-              <div className="grid gap-3">
-                {category.outputs.map((item) => (
-                  <div
-                    key={item}
-                    className="rounded-[1.15rem] border border-[var(--line)] bg-white/60 px-4 py-3 text-sm leading-6 text-[var(--sea-ink-soft)]"
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </article>
-
-            <article className="rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-6">
-              <p className="island-kicker mb-3">Analysis Notes</p>
-              <div className="grid gap-3 text-sm leading-7 text-[var(--sea-ink-soft)]">
-                <p className="m-0">
-                  This page is organized so the sidebar gives you context, while the main
-                  content area holds the data, source links, charts, and scientific visuals.
-                </p>
-                <p className="m-0">
-                  It is a good starting point for dashboards, briefing pages, and research
-                  summaries built from Philippine public datasets.
-                </p>
-              </div>
-            </article>
-          </section>
+          <section className="grid gap-4">
+          <VisualizationCard
+            title="Trend View"
+            description="A time-based chart for growth, change, or movement across years and cycles."
+            kind="bars"
+          />
+          <VisualizationCard
+            title="Comparison View"
+            description="A clean panel for comparing regions, groups, or sectors side by side."
+            kind="columns"
+          />
+          <VisualizationCard
+            title="Scientific Graph"
+            description="A relationship view for correlations, clustering, and more technical analysis."
+            kind="scatter"
+          />
         </section>
+
+          <section className="grid gap-4">
+          <article className="rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-6">
+            <p className="island-kicker mb-3">Useful Outputs</p>
+            <div className="grid gap-3">
+              {category.outputs.map((item) => (
+                <div
+                  key={item}
+                  className="rounded-[1.15rem] border border-[var(--line)] bg-white/60 px-4 py-3 text-sm leading-6 text-[var(--sea-ink-soft)]"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
+          </article>
+
+          <article className="rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-6">
+            <p className="island-kicker mb-3">Analysis Notes</p>
+            <div className="grid gap-3 text-sm leading-7 text-[var(--sea-ink-soft)]">
+              <p className="m-0">
+                This page now uses a single-column reading flow so the charts and supporting
+                details are easier to scan.
+              </p>
+              <p className="m-0">
+                It is a good starting point for dashboards, briefing pages, and research
+                summaries built from Philippine public datasets.
+              </p>
+            </div>
+            </article>
+          </section>
+
+        {researchPublications.length ? (
+          <ResearchPublicationsSection
+            title={`${category.title} papers`}
+            subtitle="Selected publications that add more context to this category."
+            publications={researchPublications}
+          />
+        ) : null}
       </div>
     </main>
   )
