@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { auth } from '@clerk/tanstack-react-start/server'
+import { Show } from '@clerk/tanstack-react-start'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import { getCategoryBySlug } from '../content/categories'
 import { getResearchPublications } from '../content/researchPublications'
@@ -8,39 +8,22 @@ import { loadEconomyDashboardData } from '../components/economy/economyData'
 import { ResearchPublicationsSection } from '../components/ResearchPublications'
 
 export const Route = createFileRoute('/categories/$slug')({
-  loader: async ({ params, location }) => {
-    const { isAuthenticated } = await auth()
-
-    if (!isAuthenticated) {
-      return {
-        authenticated: false,
-        redirectUrl: location.pathname,
-        dashboard: null,
-      }
-    }
-
+  loader: async ({ params }) => {
     if (params.slug !== 'economy-development') {
-      return {
-        authenticated: true,
-        redirectUrl: location.pathname,
-        dashboard: null,
-      }
+      return null
     }
 
-    return {
-      authenticated: true,
-      redirectUrl: location.pathname,
-      dashboard: await loadEconomyDashboardData(),
-    }
+    return loadEconomyDashboardData()
   },
   component: CategoryPage,
 })
 
 function CategoryPage() {
   const { slug } = Route.useParams()
-  const { authenticated, redirectUrl, dashboard: economyDashboard } = Route.useLoaderData()
+  const economyDashboard = Route.useLoaderData()
   const category = getCategoryBySlug(slug)
   const researchPublications = category ? getResearchPublications(category.slug) : []
+  const redirectUrl = `/categories/${slug}`
 
   if (!category) {
     return (
@@ -59,46 +42,14 @@ function CategoryPage() {
     )
   }
 
-  if (!authenticated) {
-    return (
-      <main className="page-wrap px-4 pb-20 pt-14 sm:pt-20">
-        <section className="mx-auto flex w-full max-w-3xl flex-col gap-6 rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] p-8">
-          <div className="space-y-3">
-            <p className="island-kicker">Protected category</p>
-            <h1 className="display-title text-4xl font-bold tracking-[-0.04em] text-[var(--sea-ink)]">
-              Sign in to view this category.
-            </h1>
-            <p className="max-w-2xl text-sm leading-7 text-[var(--sea-ink-soft)]">
-              This section is available to authenticated users only. Please sign in to continue to
-              {category.title.toLowerCase()} and return here after authentication.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link
-              to="/sign-in"
-              search={{ redirectUrl }}
-              className="soft-pill inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[var(--sea-ink)] no-underline"
-            >
-              Sign in to continue
-            </Link>
-            <Link to="/" className="soft-pill inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[var(--sea-ink)] no-underline">
-              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-              Back to homepage
-            </Link>
-          </div>
-        </section>
-      </main>
-    )
-  }
-
-  if (category.slug === 'economy-development') {
-    return <EconomyCategoryPage category={category} dashboard={economyDashboard} />
-  }
-
   return (
-    <main className="page-wrap px-4 pb-20 pt-14 sm:pt-20">
-      <div className="space-y-6">
+    <>
+      <Show when="signed-in">
+        {category.slug === 'economy-development' ? (
+          <EconomyCategoryPage category={category} dashboard={economyDashboard} />
+        ) : (
+          <main className="page-wrap px-4 pb-20 pt-14 sm:pt-20">
+            <div className="space-y-6">
         <section className="island-shell rounded-[2rem] border border-[var(--line)] p-6">
           <p className="island-kicker mb-3">
             {category.emoji} {category.title}
@@ -249,8 +200,45 @@ function CategoryPage() {
             publications={researchPublications}
           />
         ) : null}
-      </div>
-    </main>
+            </div>
+          </main>
+        )}
+      </Show>
+
+      <Show when="signed-out">
+        <main className="page-wrap px-4 pb-20 pt-14 sm:pt-20">
+          <section className="mx-auto flex w-full max-w-3xl flex-col gap-6 rounded-[2rem] border border-[var(--line)] bg-[var(--surface)] p-8">
+            <div className="space-y-3">
+              <p className="island-kicker">Protected category</p>
+              <h1 className="display-title text-4xl font-bold tracking-[-0.04em] text-[var(--sea-ink)]">
+                Sign in to view this category.
+              </h1>
+              <p className="max-w-2xl text-sm leading-7 text-[var(--sea-ink-soft)]">
+                This section is available to authenticated users only. Please sign in to continue
+                to {category.title.toLowerCase()} and return here after authentication.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-3">
+              <Link
+                to="/sign-in"
+                search={{ redirectUrl }}
+                className="soft-pill inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[var(--sea-ink)] no-underline"
+              >
+                Sign in to continue
+              </Link>
+              <Link
+                to="/"
+                className="soft-pill inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-[var(--sea-ink)] no-underline"
+              >
+                <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                Back to homepage
+              </Link>
+            </div>
+          </section>
+        </main>
+      </Show>
+    </>
   )
 }
 

@@ -481,6 +481,25 @@ export function getScatterPairs(series: EconomySeries[]): Array<SeriesPoint & { 
     )
 }
 
+export function getPovertyGdpPairs(
+  series: EconomySeries[],
+): Array<{ year: number; gdpPerCapita: number; poverty: number }> {
+  const gdpPerCapita = series.find((item) => item.key === 'gdpPerCapita')?.points ?? []
+  const poverty = series.find((item) => item.key === 'poverty')?.points ?? []
+  const povertyMap = new Map(poverty.map((point) => [point.year, point.value]))
+
+  return gdpPerCapita
+    .map((point) => {
+      const matching = povertyMap.get(point.year)
+      return matching === undefined
+        ? null
+        : { year: point.year, gdpPerCapita: point.value, poverty: matching }
+    })
+    .filter(
+      (point): point is { year: number; gdpPerCapita: number; poverty: number } => point !== null,
+    )
+}
+
 function buildEconomyAnalytics(series: EconomySeries[]): EconomyAnalytics {
   const lookup = new Map(series.map((item) => [item.key, item]))
   const gdpPerCapita = lookup.get('gdpPerCapita')?.points ?? []

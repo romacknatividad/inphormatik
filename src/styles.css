@@ -322,6 +322,10 @@ a {
   background: color-mix(in oklab, var(--header-bg) 84%, transparent 16%);
 }
 
+.site-header {
+  background: linear-gradient(180deg, color-mix(in oklab, var(--header-bg) 92%, white 8%), var(--header-bg));
+}
+
 .hero-chip {
   border: 1px solid rgba(14, 165, 233, 0.12);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.72));
