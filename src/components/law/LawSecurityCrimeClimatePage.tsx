@@ -2,6 +2,7 @@ import type { ComponentType } from 'react'
 import { ArrowUpRight, BookOpen, Scale, ShieldAlert } from 'lucide-react'
 import { CategoryMapSection } from '../CategoryMapSection'
 import type { Category } from '../../content/categories'
+import { getCategoryAgencies } from '../../content/categoryAgencies'
 import {
   caseIndexReleases,
   caseIndexYearCounts,
@@ -10,6 +11,7 @@ import {
   recentPhilippineReports,
 } from '../../content/lawSecurityCrimeClimate'
 import { BarChart } from './LawCharts'
+import { AgencyContactsSection } from '../AgencyContactsSection'
 
 const numberFormat = new Intl.NumberFormat('en-US')
 
@@ -19,6 +21,7 @@ export function LawSecurityCrimeClimatePage({ category }: { category: Category }
     region: entry.region,
     value: entry.value,
   }))
+  const agencies = getCategoryAgencies(category.slug)
 
   return (
     <main className="page-wrap px-4 pb-20 pt-14 sm:pt-20">
@@ -57,22 +60,10 @@ export function LawSecurityCrimeClimatePage({ category }: { category: Category }
           </div>
         </section>
 
-        <CategoryMapSection
-          title="Regional crime-reduction lens"
-          description="Recent PNP regional updates are used to shade the map by reported decline rates. It gives the page an immediate geographic reading of how crime-control gains are being described across regions."
-          filters={[
-            { label: 'Crime reduction', note: 'Regional decline rates from official PNP releases.' },
-            { label: 'Legal records', note: 'Supreme Court release cadence and publications.' },
-          ]}
-          summaryCards={[
-            { label: 'Regional snapshots', value: `${regionalCrimeSnapshots.length} regions` },
-            { label: 'Crime comparisons', value: `${crimeSnapshots.length} official series` },
-            { label: '2024 releases', value: `${maxCaseYearCount} case-index issues` },
-          ]}
-          regionValues={crimeRegionValues}
-          valueLabel="crime decline"
-          regionCountLabel="regional snapshots"
-          emptyNote="This map is driven by official PNP regional decline snapshots."
+        <AgencyContactsSection
+          title={`${category.title} agencies`}
+          subtitle="Public institutions that lead law, justice, and public safety work tied to this category."
+          agencies={agencies}
         />
 
         <section className="rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-6 sm:p-8">
@@ -301,6 +292,24 @@ export function LawSecurityCrimeClimatePage({ category }: { category: Category }
             </div>
           </section>
         ) : null}
+
+        <CategoryMapSection
+          title="Regional crime-reduction lens"
+          description="Recent PNP regional updates are used to shade the map by reported decline rates. It gives the page an immediate geographic reading of how crime-control gains are being described across regions."
+          filters={[
+            { label: 'Crime reduction', note: 'Regional decline rates from official PNP releases.' },
+            { label: 'Legal records', note: 'Supreme Court release cadence and publications.' },
+          ]}
+          summaryCards={[
+            { label: 'Regional snapshots', value: `${regionalCrimeSnapshots.length} regions` },
+            { label: 'Crime comparisons', value: `${crimeSnapshots.length} official series` },
+            { label: '2024 releases', value: `${maxCaseYearCount} case-index issues` },
+          ]}
+          regionValues={crimeRegionValues}
+          valueLabel="crime decline"
+          regionCountLabel="regional snapshots"
+          emptyNote="This map is driven by official PNP regional decline snapshots."
+        />
       </div>
     </main>
   )

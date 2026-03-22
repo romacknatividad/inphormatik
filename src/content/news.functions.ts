@@ -45,72 +45,62 @@ export type NewsPageData = {
 }
 
 export const loadNewsPageData = createServerFn({ method: 'GET' }).handler(async (): Promise<NewsPageData> => {
-  const accessKey = process.env.MEDIASTACK_API_ACCESS_KEY
-  const endpoint = buildEndpointDisplay()
+  const { loadNewsPageDataServer } = await import('./news.server')
+  return loadNewsPageDataServer()
+})
 
-  if (!accessKey) {
-    return {
-      featuredStory: null,
-      storyFeed: [],
-      topics: defaultTopics,
-      updatedAt: new Date().toISOString(),
-      error: 'News is temporarily unavailable right now.',
-      endpoint,
-      rawResponse: null,
-    }
+export function applyNewsCacheHeaders() {
+  setResponseHeaders({
+    'Cache-Control': 'public, max-age=0, s-maxage=300, stale-while-revalidate=86400',
+    'CDN-Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
+    'Vercel-CDN-Cache-Control': 'public, max-age=300, stale-while-revalidate=86400',
+  })
+}
+
+async function readNewsCache(): Promise<KvCacheEntry | null> {
+  if (!isKvConfigured()) {
+    return null
   }
 
   try {
-    const url = new URL('https://api.mediastack.com/v1/news')
-    url.searchParams.set('access_key', accessKey)
-    url.searchParams.set('countries', 'ph')
-    url.searchParams.set('languages', 'en')
-    url.searchParams.set('limit', '12')
-    url.searchParams.set('sort', 'published_desc')
-
-    const response = await fetch(url.toString())
-    if (!response.ok) {
-      const rawText = await response.text()
-      const rawResponse = parseRawResponse(rawText)
-
-      return {
-        featuredStory: null,
-        storyFeed: [],
-        topics: defaultTopics,
-        updatedAt: new Date().toISOString(),
-        error: `News is temporarily unavailable right now. (status ${response.status})`,
-        endpoint,
-        rawResponse,
-      }
+    const stored = await kv.get<string>(NEWS_CACHE_KEY)
+    if (!stored) {
+      return null
     }
 
-    const payload = (await response.json()) as MediaStackResponse
-    const stories = (payload.data ?? []).map(toNewsStory).filter((story) => story.title.length > 0)
-    const topics = buildTopics(payload.data ?? [])
-
-    return {
-      featuredStory: stories[0] ?? null,
-      storyFeed: stories.slice(1),
-      topics: topics.length ? topics : defaultTopics,
-      updatedAt: new Date().toISOString(),
-      error: null,
-      endpoint,
-      rawResponse: payload,
+    const parsed = JSON.parse(stored) as KvCacheEntry
+    if (!parsed?.expiresAt || !parsed?.value) {
+      return null
     }
+
+    if (parsed.expiresAt <= Date.now()) {
+      return null
+    }
+
+    return parsed
   } catch {
-    return {
-      featuredStory: null,
-      storyFeed: [],
-      topics: defaultTopics,
-      updatedAt: new Date().toISOString(),
-      error: 'News is temporarily unavailable right now.',
-      endpoint,
-      rawResponse: null,
-    }
+    return null
   }
-})
+}
 
-const defaultTopics = [
+async function writeNewsCache(entry: KvCacheEntry): Promise<void> {
+  if (!isKvConfigured()) {
+    return
+  }
+
+  try {
+    const ttlSeconds = Math.max(30, Math.floor((entry.expiresAt - Date.now()) / 1000))
+    await kv.set(NEWS_CACHE_KEY, JSON.stringify(entry), { ex: ttlSeconds })
+  } catch {
+    // Best-effort cache only.
+  }
+}
+
+function isKvConfigured(): boolean {
+  return Boolean(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN)
+}
+
+export const defaultTopics = [
   'Economy',
   'Population',
   'Disaster',
@@ -120,7 +110,7 @@ const defaultTopics = [
   'Agriculture',
 ]
 
-function toNewsStory(article: MediaStackArticle): NewsStory {
+export function toNewsStory(article: MediaStackArticle): NewsStory {
   const categoryLabel = normalizeCategory(article.category) ?? 'General'
   const title = article.title?.trim() || 'Untitled story'
   const href = article.url?.trim() || ''
@@ -139,7 +129,7 @@ function toNewsStory(article: MediaStackArticle): NewsStory {
   }
 }
 
-function buildTopics(items: MediaStackArticle[]): string[] {
+export function buildTopics(items: MediaStackArticle[]): string[] {
   const topics = new Set<string>()
   for (const item of items) {
     const category = normalizeCategory(item.category)
@@ -150,7 +140,7 @@ function buildTopics(items: MediaStackArticle[]): string[] {
   return Array.from(topics).slice(0, 8)
 }
 
-function normalizeCategory(category: string | string[] | null | undefined): string | null {
+export function normalizeCategory(category: string | string[] | null | undefined): string | null {
   if (!category) {
     return null
   }
@@ -162,7 +152,7 @@ function normalizeCategory(category: string | string[] | null | undefined): stri
   return category.trim() || null
 }
 
-function buildEndpointDisplay(): string {
+export function buildEndpointDisplay(): string {
   const url = new URL('https://api.mediastack.com/v1/news')
   url.searchParams.set('access_key', '[redacted]')
   url.searchParams.set('countries', 'ph')
@@ -172,7 +162,7 @@ function buildEndpointDisplay(): string {
   return url.toString()
 }
 
-function parseRawResponse(text: string): MediaStackResponse | null {
+export function parseRawResponse(text: string): MediaStackResponse | null {
   if (!text.trim()) {
     return null
   }
@@ -184,7 +174,7 @@ function parseRawResponse(text: string): MediaStackResponse | null {
   }
 }
 
-function formatPublished(value: string | null | undefined): string {
+export function formatPublished(value: string | null | undefined): string {
   if (!value) {
     return 'Just now'
   }

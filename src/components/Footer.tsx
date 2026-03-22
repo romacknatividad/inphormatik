@@ -39,8 +39,9 @@ function NewsletterSection() {
             Stay ahead with the latest Philippine data, news, and research
           </h2>
           <p className="max-w-2xl text-sm leading-7 text-[var(--sea-ink-soft)] sm:text-base">
-            Join readers who want the most useful updates in one place. We send concise notes on
-            new datasets, fresh news coverage, and research worth your attention.
+            Join readers who want the most useful updates in one place. Signing up costs nothing,
+            and we send concise notes on new datasets, fresh news coverage, and research worth
+            your attention.
           </p>
           <div className="flex flex-wrap gap-3 text-xs font-medium text-[var(--sea-ink-soft)]">
             <span className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-2">
@@ -50,7 +51,7 @@ function NewsletterSection() {
               Built for data learners
             </span>
             <span className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-2">
-              Easy to unsubscribe
+              Free to join
             </span>
           </div>
         </div>
@@ -81,7 +82,7 @@ function NewsletterSection() {
               Subscribe now
             </button>
             <span className="text-xs leading-6 text-[var(--sea-ink-soft)]">
-              Practical insights, no noisy inbox filler.
+              Practical insights, no noisy inbox filler. No cost to subscribe.
             </span>
           </div>
 

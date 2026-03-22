@@ -2,11 +2,14 @@ import { Link, createFileRoute } from '@tanstack/react-router'
 import { Show } from '@clerk/tanstack-react-start'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import { getCategoryBySlug, type Category } from '../content/categories'
+import { getCategoryAgencies } from '../content/categoryAgencies'
 import { getResearchPublications } from '../content/researchPublications'
 import { CategoryMapSection } from '../components/CategoryMapSection'
+import { AgencyContactsSection } from '../components/AgencyContactsSection'
 import { EconomyCategoryPage } from '../components/economy/EconomyCategoryPage'
 import { loadEconomyDashboardData } from '../components/economy/economyData'
 import { LawSecurityCrimeClimatePage } from '../components/law/LawSecurityCrimeClimatePage'
+import { PopulationSocietyPage } from '../components/population/PopulationSocietyPage'
 import { ResearchPublicationsSection } from '../components/ResearchPublications'
 
 export const Route = createFileRoute('/categories/$slug')({
@@ -25,6 +28,7 @@ function CategoryPage() {
   const economyDashboard = Route.useLoaderData()
   const category = getCategoryBySlug(slug)
   const researchPublications = category ? getResearchPublications(category.slug) : []
+  const agencies = category ? getCategoryAgencies(category.slug) : []
   const redirectUrl = `/categories/${slug}`
 
   if (!category) {
@@ -49,6 +53,8 @@ function CategoryPage() {
       <Show when="signed-in">
         {category.slug === 'economy-development' ? (
           <EconomyCategoryPage category={category} dashboard={economyDashboard} />
+        ) : category.slug === 'population-society' ? (
+          <PopulationSocietyPage category={category} />
         ) : category.slug === 'law-security-crime-climate' ? (
           <LawSecurityCrimeClimatePage category={category} />
         ) : (
@@ -63,6 +69,12 @@ function CategoryPage() {
           </h1>
           <p className="text-sm leading-7 text-[var(--sea-ink-soft)]">{category.overview}</p>
         </section>
+
+        <AgencyContactsSection
+          title={`${category.title} agencies`}
+          subtitle="These agencies are the main public institutions connected to this topic. Their official sites, contact points, and mandates are listed for quick reference."
+          agencies={agencies}
+        />
 
         <section className="rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-6">
           <p className="island-kicker mb-3">Category Details</p>
@@ -81,20 +93,9 @@ function CategoryPage() {
                 Data, source links, charts, and visual analysis
               </h2>
             </div>
-            <span className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-1 text-xs text-[var(--sea-ink-soft)]">
+          <span className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-1 text-xs text-[var(--sea-ink-soft)]">
               Built for educational exploration
             </span>
-          </div>
-
-          <div className="mb-6">
-            <CategoryMapSection
-              title={`${category.title} regional lens`}
-              description="A reusable Philippine map that adapts to the category's focus and gives every page a visual entry point."
-              filters={buildCategoryMapFilters(category)}
-              summaryCards={buildCategoryMapSummary(category)}
-              loading={false}
-              emptyNote="This category does not have a live regional dataset yet, so the map acts as a structured geographic preview."
-            />
           </div>
 
           <div className="grid gap-4">
@@ -113,6 +114,17 @@ function CategoryPage() {
                 </p>
               </article>
             ))}
+          </div>
+
+          <div className="mt-6">
+            <CategoryMapSection
+              title={`${category.title} regional lens`}
+              description="A reusable Philippine map that adapts to the category's focus and gives every page a visual entry point."
+              filters={buildCategoryMapFilters(category)}
+              summaryCards={buildCategoryMapSummary(category)}
+              loading={false}
+              emptyNote="This category does not have a live regional dataset yet, so the map acts as a structured geographic preview."
+            />
           </div>
         </section>
 

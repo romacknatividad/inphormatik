@@ -250,6 +250,38 @@ export const researchPublicationsByCategory: Record<string, ResearchPublication[
       href: 'https://doi.org/10.1002/ijop.12200',
     },
   ],
+  'entertainment-music-films-arts': [
+    {
+      title: 'In the News!: “Teatro Filipino,” “Artista Filipina,” “Piano Filipino”: Semantic Birthings of a Nascent Identity in Music',
+      authors: ['Ma. Patricia Brillantes Silvestre'],
+      year: 2025,
+      href: 'https://archium.ateneo.edu/paha/vol12/iss1/4/',
+    },
+    {
+      title: 'Pagkukuwento ng ALAMAT: Ang Pagtatagpo ng Paglalakbay at Paggawa sa Genre na P-pop',
+      authors: ['Andrea Anne I. Trinidad'],
+      year: 2024,
+      href: 'https://archium.ateneo.edu/katipunan/vol12/iss1/10/',
+    },
+    {
+      title: 'The Arts in the Time of Duterte: Cultural Responses to the War on Drugs',
+      authors: ['Vincen Gregory Yu', 'Kristine Ong Muslim'],
+      year: 2021,
+      href: 'https://archium.ateneo.edu/dev-stud-faculty-pubs/86/',
+    },
+    {
+      title: 'Pelikulang Komiks: Toward a Theory of Filipino Film Adaptation',
+      authors: ['Joyce L. Arriola'],
+      year: 2018,
+      href: 'https://archium.ateneo.edu/kk/vol1/iss30/30/',
+    },
+    {
+      title: 'Contemporary Independent Film Producing in the Philippines: The case of Ang Panggagahasa kay Fe',
+      authors: ['Alvin B. Yapan'],
+      year: 2012,
+      href: 'https://archium.ateneo.edu/filipino-faculty-pubs/66/',
+    },
+  ],
   education: [
     {
       title: 'Compulsory Kindergarten Education and Early-Teenage Literacy in the Philippines',

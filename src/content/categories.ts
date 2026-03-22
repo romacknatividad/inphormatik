@@ -249,6 +249,67 @@ export const categories: Category[] = [
     ],
   },
   {
+    slug: 'entertainment-music-films-arts',
+    emoji: '🎬',
+    title: 'Entertainment, Music, Films & Arts',
+    description:
+      'Film archives, music heritage, and art collections for studying creative culture and media history.',
+    overview:
+      'Use this category to explore how Philippine music, film, and visual arts are documented, preserved, and analyzed across institutions and archives.',
+    resources: [
+      {
+        title: 'Philippine Film Archive Collection',
+        description:
+          'A public collection of audiovisual materials, restored titles, and archival records from the FDCP.',
+        href: 'https://philippinefilmarchive.fdcp.ph/collection',
+        source: 'Film Development Council of the Philippines',
+      },
+      {
+        title: 'Philippine Film Archive Catalogue',
+        description:
+          'Browse the archive catalogue to explore restored and preserved Philippine film titles.',
+        href: 'https://philippinefilmarchive.fdcp.ph/catalogue/filipinas',
+        source: 'Film Development Council of the Philippines',
+      },
+      {
+        title: 'Linggo ng Musikang Pilipino',
+        description:
+          'NCCA’s official initiative for celebrating and promoting Philippine music heritage.',
+        href: 'https://ncca.gov.ph/linggo-ng-musikang-pilipino/',
+        source: 'National Commission for Culture and the Arts',
+      },
+      {
+        title: 'NCCA Composition Prize',
+        description:
+          'A program that supports and enriches Philippine concert music literature through original composition.',
+        href: 'https://ncca.gov.ph/ncca-composition-prize-2024/',
+        source: 'National Commission for Culture and the Arts',
+      },
+      {
+        title: 'National Museum of Fine Arts',
+        description:
+          'The National Museum’s fine arts collection and research materials for Philippine visual art history.',
+        href: 'https://www.nationalmuseum.gov.ph/our-museums/national-museum-of-fine-arts/',
+        source: 'National Museum of the Philippines',
+      },
+    ],
+    examples: [
+      'Philippine film catalogues and restored titles',
+      'Music heritage and composition records',
+      'Fine arts collections and artist archives',
+    ],
+    studyAreas: [
+      'Film history and audiovisual preservation',
+      'Music heritage and composition analysis',
+      'Visual arts collections and curation',
+    ],
+    outputs: [
+      'Archive discovery dashboards',
+      'Cultural media timelines',
+      'Arts and heritage catalogues',
+    ],
+  },
+  {
     slug: 'education',
     emoji: '🎓',
     title: 'Education',

@@ -50,8 +50,8 @@ export function CategoryMapSection({
   const [activeFilter, setActiveFilter] = useState(filters[0]?.label ?? 'Overview')
   const [activeRegion, setActiveRegion] = useState<string | null>(null)
   const featureCollection = regionsGeojson as RegionFeatureCollection
-  const width = 820
-  const height = 620
+  const width = 640
+  const height = 460
 
   const valueByRegion = useMemo(() => {
     const map = new Map<string, number>()
@@ -109,8 +109,8 @@ export function CategoryMapSection({
         <LoadingChart />
       ) : (
         <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_280px]">
-          <div className="rounded-[1.5rem] border border-[var(--line)] bg-white/60 p-3">
-            <svg viewBox={`0 0 ${width} ${height}`} className="h-[32rem] w-full">
+          <div className="mx-auto w-full max-w-[42rem] rounded-[1.5rem] border border-[var(--line)] bg-white/60 p-3">
+            <svg viewBox={`0 0 ${width} ${height}`} className="h-[22rem] w-full">
               {featureCollection.features.map((feature, index) => {
                 const regionName = feature.properties.REGION ?? `Region ${index + 1}`
                 const normalized = normalizeRegionName(regionName)
