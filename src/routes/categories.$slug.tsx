@@ -1,10 +1,12 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { Show } from '@clerk/tanstack-react-start'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
-import { getCategoryBySlug } from '../content/categories'
+import { getCategoryBySlug, type Category } from '../content/categories'
 import { getResearchPublications } from '../content/researchPublications'
+import { CategoryMapSection } from '../components/CategoryMapSection'
 import { EconomyCategoryPage } from '../components/economy/EconomyCategoryPage'
 import { loadEconomyDashboardData } from '../components/economy/economyData'
+import { LawSecurityCrimeClimatePage } from '../components/law/LawSecurityCrimeClimatePage'
 import { ResearchPublicationsSection } from '../components/ResearchPublications'
 
 export const Route = createFileRoute('/categories/$slug')({
@@ -47,6 +49,8 @@ function CategoryPage() {
       <Show when="signed-in">
         {category.slug === 'economy-development' ? (
           <EconomyCategoryPage category={category} dashboard={economyDashboard} />
+        ) : category.slug === 'law-security-crime-climate' ? (
+          <LawSecurityCrimeClimatePage category={category} />
         ) : (
           <main className="page-wrap px-4 pb-20 pt-14 sm:pt-20">
             <div className="space-y-6">
@@ -80,6 +84,17 @@ function CategoryPage() {
             <span className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-1 text-xs text-[var(--sea-ink-soft)]">
               Built for educational exploration
             </span>
+          </div>
+
+          <div className="mb-6">
+            <CategoryMapSection
+              title={`${category.title} regional lens`}
+              description="A reusable Philippine map that adapts to the category's focus and gives every page a visual entry point."
+              filters={buildCategoryMapFilters(category)}
+              summaryCards={buildCategoryMapSummary(category)}
+              loading={false}
+              emptyNote="This category does not have a live regional dataset yet, so the map acts as a structured geographic preview."
+            />
           </div>
 
           <div className="grid gap-4">
@@ -251,6 +266,46 @@ function InfoRow({ label, value }: { label: string; value: string }) {
       <span className="text-sm font-semibold text-[var(--sea-ink)]">{value}</span>
     </div>
   )
+}
+
+function buildCategoryMapFilters(category: Category) {
+  const filters = [
+    ...category.studyAreas.slice(0, 2),
+    ...category.outputs.slice(0, 1),
+    ...category.examples.slice(0, 1),
+  ]
+
+  return filters
+    .filter(Boolean)
+    .map((label, index) => ({
+      label,
+      note: buildCategoryMapNote(category, label, index),
+    }))
+}
+
+function buildCategoryMapSummary(category: Category) {
+  return [
+    { label: 'Examples', value: `${category.examples.length} topics` },
+    { label: 'Study areas', value: `${category.studyAreas.length} themes` },
+    { label: 'Outputs', value: `${category.outputs.length} use cases` },
+    { label: 'Sources', value: `${category.resources?.length ?? 0} links` },
+  ]
+}
+
+function buildCategoryMapNote(category: Category, label: string, index: number): string {
+  if (index === 0) {
+    return `Use this map as a geographic starting point for ${category.title.toLowerCase()}.`
+  }
+
+  if (label.toLowerCase().includes('regional')) {
+    return 'This filter frames the map as a regional comparison tool.'
+  }
+
+  if (label.toLowerCase().includes('policy') || label.toLowerCase().includes('use case')) {
+    return 'This filter highlights how the category can inform planning or decision-making.'
+  }
+
+  return `A quick way to connect the map to ${label.toLowerCase()}.`
 }
 
 function VisualizationCard({

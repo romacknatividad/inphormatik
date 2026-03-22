@@ -12,7 +12,7 @@ import {
 import { ScatterChartCard, SeriesChartCard } from './EconomyCharts'
 import { RegionalPovertyChartCard, RegionalTrendChartCard } from './EconomyRegionalCharts'
 import { GDPovertyScatterCard, RegionalPovertyChangeChartCard } from './EconomyComparisonCharts'
-import { PhilippinesPovertyMapCard } from './PhilippinesPovertyMap'
+import { CategoryMapSection } from '../CategoryMapSection'
 import { ResearchPublicationsSection } from '../ResearchPublications'
 
 export function EconomyCategoryPage({
@@ -222,7 +222,52 @@ export function EconomyCategoryPage({
           {regionalPovertyError ? <ErrorCard message={regionalPovertyError} /> : null}
 
           <div className="space-y-4">
-            <PhilippinesPovertyMapCard summary={regionalPoverty} loading={loading} />
+            <CategoryMapSection
+              title="Regional poverty map"
+              description="A shaded view of Philippine regions that helps compare poverty levels at a glance."
+              filters={[
+                {
+                  label: 'Poverty',
+                  note: 'Shows the latest regional poverty snapshot and highlights the current gap.',
+                },
+                {
+                  label: 'Regional gaps',
+                  note: 'Focuses attention on the spread between high- and low-poverty regions.',
+                },
+                {
+                  label: 'Policy outcomes',
+                  note: 'Frames the map as a quick read on which places need sustained support.',
+                },
+              ]}
+              summaryCards={[
+                {
+                  label: 'Regions',
+                  value: regionalPoverty ? String(regionalPoverty.regionCount) : 'n/a',
+                },
+                {
+                  label: 'Latest year',
+                  value: regionalPoverty?.latestYear ? String(regionalPoverty.latestYear) : 'n/a',
+                },
+                {
+                  label: 'National poverty',
+                  value: formatPercent(regionalPoverty?.nationalLatest ?? null),
+                },
+                {
+                  label: 'Gap',
+                  value: formatPercent(regionalPoverty?.gap ?? null),
+                },
+              ]}
+              regionValues={
+                regionalPoverty?.regions.map((region) => ({
+                  region: region.label,
+                  value: region.points[region.points.length - 1]?.value ?? Number.NaN,
+                })) ?? null
+              }
+              loading={loading}
+              valueLabel="Regional poverty"
+              regionCountLabel="regions"
+              emptyNote="The map is still useful here as a regional lens even before all values load."
+            />
 
             <div className="grid gap-4 lg:grid-cols-2">
               <RegionalPovertyChartCard

@@ -292,6 +292,119 @@ export const categories: Category[] = [
     ],
   },
   {
+    slug: 'religion-culture-beliefs',
+    emoji: '🛕',
+    title: 'Religion, Culture & Beliefs',
+    description:
+      'Religious affiliation, cultural heritage, and identity datasets for understanding beliefs and community life.',
+    overview:
+      'This category explores how religion, culture, and heritage are measured across the Philippines through census results and cultural inventories.',
+    resources: [
+      {
+        title: 'Religious Affiliation in the Philippines',
+        description:
+          'PSA’s 2020 Census release on religious affiliation by household population, with regional and provincial breakdowns.',
+        href: 'https://psa.gov.ph/content/religious-affiliation-philippines-2020-census-population-and-housing?vcode=xvMkX2',
+        source: 'Philippine Statistics Authority',
+      },
+      {
+        title: 'PRECUP - Philippine Registry of Cultural Property',
+        description:
+          'NCCA’s registry of cultural properties and heritage resources, useful for cultural inventories and preservation work.',
+        href: 'https://ncca.gov.ph/philippine-registry-cultural-property-precup/',
+        source: 'National Commission for Culture and the Arts',
+      },
+      {
+        title: 'Cultural Mapping Program',
+        description:
+          'NCCA’s cultural mapping program that helps LGUs build baseline cultural profiles and inventories.',
+        href: 'https://ncca.gov.ph/about-ncca-3/ncca-cultural-mapping-program/',
+        source: 'National Commission for Culture and the Arts',
+      },
+      {
+        title: 'Sagisag Kultura ng Filipinas',
+        description:
+          'A cultural database of Philippine symbols, heritage, and icons curated by the NCCA.',
+        href: 'https://ncca.gov.ph/philippine-cultural-education-program-pcep/sagisag-kultura/',
+        source: 'National Commission for Culture and the Arts',
+      },
+    ],
+    examples: [
+      'Religious affiliation by province',
+      'Cultural property inventories',
+    ],
+    studyAreas: [
+      'Religious affiliation and social geography',
+      'Cultural heritage inventories and mapping',
+      'Belief systems and community identity',
+    ],
+    outputs: [
+      'Cultural profile dashboards',
+      'Heritage mapping visuals',
+      'Community studies and briefs',
+    ],
+  },
+  {
+    slug: 'law-security-crime-climate',
+    emoji: '⚖️',
+    title: 'Law, Security, Crime & Climate',
+    description:
+      'Legal research, public safety, crime trends, and climate data for risk, governance, and resilience analysis.',
+    overview:
+      'This category brings together legal research tools, public safety statistics, and climate data to help explore how rules, security, and environment intersect in the Philippines.',
+    resources: [
+      {
+        title: 'Supreme Court E-Library',
+        description:
+          'Philippine Supreme Court legal research library for cases, rules, and judicial materials.',
+        href: 'https://elibrary.judiciary.gov.ph/elibsearch',
+        source: 'Supreme Court of the Philippines',
+      },
+      {
+        title: 'PNP Crime Statistics',
+        description:
+          'Official Philippine National Police crime statistics portal for crime trend and public safety analysis.',
+        href: 'https://pnp.gov.ph/crime-statistics/',
+        source: 'Philippine National Police',
+      },
+      {
+        title: 'PNP Nationwide Crime Statistics',
+        description:
+          'FOI request page for nationwide crime statistics and related public-safety records.',
+        href: 'https://www.foi.gov.ph/agencies/pnp/pnp-nationwide-crime-statistics/',
+        source: 'Philippines FOI Portal',
+      },
+      {
+        title: 'PAGASA Climate Data',
+        description:
+          'Official climate data request page for rainfall, temperature, and climatological records.',
+        href: 'https://www.pagasa.dost.gov.ph/climate/climate-data',
+        source: 'PAGASA',
+      },
+      {
+        title: 'PAGASA Climate of the Philippines',
+        description:
+          'Climate reference material that explains the country’s climate zones and seasonal patterns.',
+        href: 'https://www.pagasa.dost.gov.ph/information/climate-philippines',
+        source: 'PAGASA',
+      },
+    ],
+    examples: [
+      'Philippine legal cases and rulings',
+      'Crime statistics and security trends',
+    ],
+    studyAreas: [
+      'Legal research and jurisprudence',
+      'Crime incidence and public safety',
+      'Climate conditions and resilience planning',
+    ],
+    outputs: [
+      'Policy and legal briefs',
+      'Safety monitoring dashboards',
+      'Climate risk and resilience visuals',
+    ],
+  },
+  {
     slug: 'agriculture',
     emoji: '🍚',
     title: 'Agriculture',
