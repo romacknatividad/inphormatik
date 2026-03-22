@@ -1,117 +1,15 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { ArrowUpRight, Clock3, Rss, Sparkles } from 'lucide-react'
-
-type MediaStackArticle = {
-  title: string
-  description?: string | null
-  url?: string | null
-  source?: string | null
-  author?: string | null
-  image?: string | null
-  published_at?: string | null
-  category?: string[] | null
-  country?: string[] | null
-  language?: string | null
-}
-
-type MediaStackResponse = {
-  data?: MediaStackArticle[]
-  pagination?: {
-    limit?: number
-    offset?: number
-    count?: number
-    total?: number
-  }
-}
-
-type NewsStory = {
-  title: string
-  summary: string
-  source: string
-  author: string | null
-  image: string | null
-  published: string
-  href: string
-  categoryLabel: string
-}
-
-type NewsPageData = {
-  featuredStory: NewsStory | null
-  storyFeed: NewsStory[]
-  topics: string[]
-  updatedAt: string
-  error: string | null
-}
+import { loadNewsPageData, type NewsPageData } from '../content/news.functions'
 
 export const Route = createFileRoute('/news')({
-  loader: async (): Promise<NewsPageData> => {
-    const accessKey = process.env.MEDIASTACK_API_ACCESS_KEY
-
-    if (!accessKey) {
-      return {
-        featuredStory: null,
-        storyFeed: [],
-        topics: defaultTopics,
-        updatedAt: new Date().toISOString(),
-        error: 'News is temporarily unavailable right now.',
-      }
-    }
-
-    try {
-      const url = new URL('https://api.mediastack.com/v1/news')
-      url.searchParams.set('access_key', accessKey)
-      url.searchParams.set('countries', 'ph')
-      url.searchParams.set('languages', 'en')
-      url.searchParams.set('limit', '12')
-      url.searchParams.set('sort', 'published_desc')
-
-      const response = await fetch(url.toString())
-      if (!response.ok) {
-        return {
-          featuredStory: null,
-          storyFeed: [],
-          topics: defaultTopics,
-          updatedAt: new Date().toISOString(),
-          error: 'News is temporarily unavailable right now.',
-        }
-      }
-
-      const payload = (await response.json()) as MediaStackResponse
-      const stories = (payload.data ?? []).map(toNewsStory).filter((story) => story.title.length > 0)
-      const topics = buildTopics(payload.data ?? [])
-
-      return {
-        featuredStory: stories[0] ?? null,
-        storyFeed: stories.slice(1),
-        topics: topics.length ? topics : defaultTopics,
-        updatedAt: new Date().toISOString(),
-        error: null,
-      }
-    } catch {
-      return {
-        featuredStory: null,
-        storyFeed: [],
-        topics: defaultTopics,
-        updatedAt: new Date().toISOString(),
-        error: 'News is temporarily unavailable right now.',
-      }
-    }
-  },
+  loader: async (): Promise<NewsPageData> => loadNewsPageData(),
   component: NewsPage,
 })
 
-const defaultTopics = [
-  'Economy',
-  'Population',
-  'Disaster',
-  'Governance',
-  'Technology',
-  'Education',
-  'Agriculture',
-]
-
 function NewsPage() {
-  const { featuredStory, storyFeed, topics, updatedAt, error } = Route.useLoaderData()
+  const { featuredStory, storyFeed, topics, updatedAt, error, endpoint, rawResponse } =
+    Route.useLoaderData()
 
   return (
     <main className="page-wrap px-4 pb-20 pt-14 sm:pt-20">
@@ -129,6 +27,40 @@ function NewsPage() {
               A featured story, topic chips, and a stacked feed keep the latest updates easy to
               scan.
             </p>
+          </div>
+
+          <div className="mt-8 rounded-[1.5rem] border border-[var(--line)] bg-[var(--surface)] p-4">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="island-kicker mb-2">Live endpoint</p>
+                <h2 className="text-lg font-semibold tracking-tight text-[var(--sea-ink)]">
+                  MediaStack request used by this page
+                </h2>
+              </div>
+              <span className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-1 text-xs font-medium text-[var(--sea-ink-soft)]">
+                Server-side fetch
+              </span>
+            </div>
+            <code className="block overflow-x-auto rounded-[1rem] border border-[var(--line)] bg-white/75 px-4 py-3 text-xs leading-6 text-[var(--sea-ink-soft)]">
+              {endpoint}
+            </code>
+          </div>
+
+          <div className="mt-4 rounded-[1.5rem] border border-[var(--line)] bg-[var(--surface)] p-4">
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="island-kicker mb-2">Raw response</p>
+                <h2 className="text-lg font-semibold tracking-tight text-[var(--sea-ink)]">
+                  JSON returned by the API
+                </h2>
+              </div>
+              <span className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-1 text-xs font-medium text-[var(--sea-ink-soft)]">
+                {rawResponse?.pagination?.count ?? 0} records
+              </span>
+            </div>
+            <pre className="max-h-[32rem] overflow-auto rounded-[1rem] border border-[var(--line)] bg-[var(--panel)] p-4 text-xs leading-6 text-[var(--sea-ink-soft)]">
+              {rawResponse ? JSON.stringify(rawResponse, null, 2) : 'No raw JSON payload available.'}
+            </pre>
           </div>
         </section>
 
@@ -275,53 +207,6 @@ function NewsPage() {
       </div>
     </main>
   )
-}
-
-function toNewsStory(article: MediaStackArticle): NewsStory {
-  const categoryLabel = article.category?.[0] ?? 'General'
-  const title = article.title?.trim() || 'Untitled story'
-  const href = article.url?.trim() || ''
-
-  return {
-    title,
-    summary:
-      article.description?.trim() ||
-      'No summary was provided by the response, but the story can still be opened from the source link.',
-    source: article.source?.trim() || 'MediaStack',
-    author: article.author?.trim() || null,
-    image: article.image?.trim() || null,
-    published: formatPublished(article.published_at),
-    href,
-    categoryLabel,
-  }
-}
-
-function buildTopics(items: MediaStackArticle[]): string[] {
-  const topics = new Set<string>()
-  for (const item of items) {
-    for (const category of item.category ?? []) {
-      if (category) {
-        topics.add(category)
-      }
-    }
-  }
-  return Array.from(topics).slice(0, 8)
-}
-function formatPublished(value: string | null | undefined): string {
-  if (!value) {
-    return 'Just now'
-  }
-
-  const date = new Date(value)
-  if (Number.isNaN(date.getTime())) {
-    return value
-  }
-
-  return date.toLocaleDateString(undefined, {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
 }
 
 function formatUpdated(value: string): string {
