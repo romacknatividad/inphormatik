@@ -347,11 +347,11 @@ export const categories: Category[] = [
   {
     slug: 'law-security-crime-climate',
     emoji: '⚖️',
-    title: 'Law, Security, Crime & Climate',
+    title: 'Law, Security & Crime',
     description:
-      'Legal research, public safety, crime trends, and climate data for risk, governance, and resilience analysis.',
+      'Legal research, public safety, and crime trends for risk and governance analysis.',
     overview:
-      'This category brings together legal research tools, public safety statistics, and climate data to help explore how rules, security, and environment intersect in the Philippines.',
+      'This category brings together legal research tools and public safety statistics to help explore how rules, policing, and justice intersect in the Philippines.',
     resources: [
       {
         title: 'Supreme Court E-Library',
@@ -374,20 +374,6 @@ export const categories: Category[] = [
         href: 'https://www.foi.gov.ph/agencies/pnp/pnp-nationwide-crime-statistics/',
         source: 'Philippines FOI Portal',
       },
-      {
-        title: 'PAGASA Climate Data',
-        description:
-          'Official climate data request page for rainfall, temperature, and climatological records.',
-        href: 'https://www.pagasa.dost.gov.ph/climate/climate-data',
-        source: 'PAGASA',
-      },
-      {
-        title: 'PAGASA Climate of the Philippines',
-        description:
-          'Climate reference material that explains the country’s climate zones and seasonal patterns.',
-        href: 'https://www.pagasa.dost.gov.ph/information/climate-philippines',
-        source: 'PAGASA',
-      },
     ],
     examples: [
       'Philippine legal cases and rulings',
@@ -396,12 +382,12 @@ export const categories: Category[] = [
     studyAreas: [
       'Legal research and jurisprudence',
       'Crime incidence and public safety',
-      'Climate conditions and resilience planning',
+      'Case tracking and law enforcement analytics',
     ],
     outputs: [
       'Policy and legal briefs',
       'Safety monitoring dashboards',
-      'Climate risk and resilience visuals',
+      'Court and police trend visualizations',
     ],
   },
   {

@@ -1,17 +1,15 @@
 import type { ComponentType } from 'react'
-import { ArrowUpRight, BookOpen, CloudRain, Scale, ShieldAlert } from 'lucide-react'
+import { ArrowUpRight, BookOpen, Scale, ShieldAlert } from 'lucide-react'
 import { CategoryMapSection } from '../CategoryMapSection'
 import type { Category } from '../../content/categories'
 import {
   caseIndexReleases,
   caseIndexYearCounts,
-  climateStations,
   crimeSnapshots,
   regionalCrimeSnapshots,
   recentPhilippineReports,
-  tayabasMonthlyRainfall,
 } from '../../content/lawSecurityCrimeClimate'
-import { BarChart, LineChart } from './LawCharts'
+import { BarChart } from './LawCharts'
 
 const numberFormat = new Intl.NumberFormat('en-US')
 
@@ -33,9 +31,8 @@ export function LawSecurityCrimeClimatePage({ category }: { category: Category }
             {category.description}
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-[var(--sea-ink-soft)]">
-            This page surfaces real public-safety, legal, and climate records from official
-            Philippine sources so the content feels like a proper briefing instead of a placeholder
-            layout.
+            This page surfaces real public-safety and legal records from official Philippine
+            sources so the content feels like a proper briefing instead of a placeholder layout.
           </p>
 
           <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -44,12 +41,6 @@ export function LawSecurityCrimeClimatePage({ category }: { category: Category }
               label="National index crimes"
               value="34,841"
               note="Reported for 2024, down from 38,404 in 2023."
-            />
-            <ToplineCard
-              icon={CloudRain}
-              label="Rainiest station sample"
-              value="3,757.3 mm"
-              note="Surigao has the highest annual rainfall in the sample."
             />
             <ToplineCard
               icon={Scale}
@@ -71,13 +62,11 @@ export function LawSecurityCrimeClimatePage({ category }: { category: Category }
           description="Recent PNP regional updates are used to shade the map by reported decline rates. It gives the page an immediate geographic reading of how crime-control gains are being described across regions."
           filters={[
             { label: 'Crime reduction', note: 'Regional decline rates from official PNP releases.' },
-            { label: 'Climate exposure', note: 'Station normals from PAGASA rainfall records.' },
             { label: 'Legal records', note: 'Supreme Court release cadence and publications.' },
           ]}
           summaryCards={[
             { label: 'Regional snapshots', value: `${regionalCrimeSnapshots.length} regions` },
             { label: 'Crime comparisons', value: `${crimeSnapshots.length} official series` },
-            { label: 'Climate stations', value: `${climateStations.length} PAGASA normals` },
             { label: '2024 releases', value: `${maxCaseYearCount} case-index issues` },
           ]}
           regionValues={crimeRegionValues}
@@ -172,86 +161,6 @@ export function LawSecurityCrimeClimatePage({ category }: { category: Category }
                     </td>
                     <td className="py-3 pr-4 font-semibold text-[var(--sea-ink)]">
                       {formatPercent(declinePct(snapshot))}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </section>
-
-        <section className="rounded-[1.75rem] border border-[var(--line)] bg-[var(--surface)] p-6 sm:p-8">
-          <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <p className="island-kicker mb-2">Climate Signals</p>
-              <h2 className="text-2xl font-semibold tracking-tight text-[var(--sea-ink)]">
-                PAGASA rainfall normals by station
-              </h2>
-              <p className="mt-2 max-w-3xl text-sm leading-7 text-[var(--sea-ink-soft)]">
-                These station normals show how rainfall intensity varies across the country. The
-                first chart compares annual rainfall totals, while the line chart below shows the
-                seasonal pattern for Tayabas, Quezon.
-              </p>
-            </div>
-            <span className="rounded-full border border-[var(--line)] bg-white/70 px-3 py-1 text-xs text-[var(--sea-ink-soft)]">
-              <CloudRain className="mr-2 inline h-4 w-4 align-[-0.2em]" />
-              {climateStations.length} stations
-            </span>
-          </div>
-
-          <div className="grid gap-4 xl:grid-cols-2">
-            <article className="rounded-[1.5rem] border border-[var(--line)] bg-white/60 p-4">
-              <BarChart
-                title="Annual rainfall by station"
-                subtitle="A compact comparison of the five PAGASA climatological normals used on this page."
-                data={climateStations.map((station) => ({
-                  label: station.chartLabel,
-                  value: station.annualRainfall,
-                }))}
-                formatValue={(value) => numberFormat.format(value)}
-                valueSuffix=" mm"
-              />
-            </article>
-
-            <article className="rounded-[1.5rem] border border-[var(--line)] bg-white/60 p-4">
-              <LineChart
-                title="Tayabas rainfall cycle"
-                subtitle="Monthly rainfall rises toward the last quarter of the year and peaks in November."
-                data={tayabasMonthlyRainfall.map((point) => ({ label: point.month, value: point.rainfall }))}
-                formatValue={(value) => numberFormat.format(value)}
-                valueSuffix=" mm"
-              />
-            </article>
-          </div>
-
-          <div className="mt-5 overflow-x-auto">
-            <table className="min-w-full border-collapse text-left text-sm">
-              <thead>
-                <tr className="border-b border-[var(--line)] text-[11px] uppercase tracking-[0.16em] text-[var(--kicker)]">
-                  <th className="pb-3 pr-4 font-semibold">Station</th>
-                  <th className="pb-3 pr-4 font-semibold">Annual rainfall</th>
-                  <th className="pb-3 pr-4 font-semibold">Rainy days</th>
-                  <th className="pb-3 pr-4 font-semibold">Source</th>
-                </tr>
-              </thead>
-              <tbody>
-                {climateStations.map((station) => (
-                  <tr key={station.station} className="border-b border-[var(--line)] last:border-0">
-                    <td className="py-3 pr-4 font-medium text-[var(--sea-ink)]">{station.station}</td>
-                    <td className="py-3 pr-4 text-[var(--sea-ink-soft)]">
-                      {numberFormat.format(station.annualRainfall)} mm
-                    </td>
-                    <td className="py-3 pr-4 text-[var(--sea-ink-soft)]">{station.rainyDays}</td>
-                    <td className="py-3 pr-4">
-                      <a
-                        href={station.href}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-[var(--sea-ink)] no-underline"
-                      >
-                        Open PDF
-                        <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
-                      </a>
                     </td>
                   </tr>
                 ))}
