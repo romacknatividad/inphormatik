@@ -1,14 +1,13 @@
+import '../styles.css'
+
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { ClerkProvider } from '@clerk/tanstack-react-start'
-import Header from '../components/Header'
-import Footer from '../components/Footer'
 
-import appCss from '../styles.css?url'
-
-const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`
+const clerkPublishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
 
 export const Route = createRootRoute({
   head: () => ({
+    title: 'InPHormatik | Digital systems and software',
     meta: [
       {
         charSet: 'utf-8',
@@ -18,13 +17,8 @@ export const Route = createRootRoute({
         content: 'width=device-width, initial-scale=1',
       },
       {
-        title: 'InPHormatik',
-      },
-    ],
-    links: [
-      {
-        rel: 'stylesheet',
-        href: appCss,
+        name: 'theme-color',
+        content: '#f6f2ea',
       },
     ],
   }),
@@ -35,14 +29,11 @@ function RootDocument({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(37,99,235,0.22)]">
-        <ClerkProvider>
-          <Header />
+      <body>
+        <ClerkProvider publishableKey={clerkPublishableKey}>
           {children}
-          <Footer />
         </ClerkProvider>
         <Scripts />
       </body>
